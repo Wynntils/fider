@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Modal, SignInControl, LegalFooter } from "@fider/components"
 import { Button } from "./common"
 import { Trans } from "@lingui/macro"
+import { useFider } from "@fider/hooks"
 
 interface SignInModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ interface SignInModalProps {
 
 export const SignInModal: React.StatelessComponent<SignInModalProps> = (props) => {
   const [email, setEmail] = useState("")
+  const fider = useFider()
 
   useEffect(() => {
     if (email) {
@@ -19,6 +21,12 @@ export const SignInModal: React.StatelessComponent<SignInModalProps> = (props) =
 
   const onEmailSent = (value: string): void => {
     setEmail(value)
+  }
+
+  if (props.isOpen && fider.settings.oauth.length == 1 && !(fider.session.tenant ? fider.session.tenant.isEmailAuthAllowed : true)) {
+    // Redirect to only provider on clicking sign in
+    window.location.href = fider.settings.oauth.pop()?.url ?? ""
+    return <></>
   }
 
   const closeModal = () => {
