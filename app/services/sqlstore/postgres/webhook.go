@@ -64,8 +64,8 @@ func listActiveWebhooksByType(ctx context.Context, q *query.ListActiveWebhooksBy
 		err := trx.Select(&webhooks, `
 			SELECT id, name, type, status, url, content, http_method, http_headers 
 			FROM webhooks 
-			WHERE tenant_id = $1 AND type = $2 AND status = $3 
-			ORDER BY id`, tenant.ID, q.Type, enum.WebhookEnabled)
+			WHERE tenant_id = $1 AND type = $2 AND (status = $3 OR status = $4)
+			ORDER BY id`, tenant.ID, q.Type, enum.WebhookEnabled, enum.WebhookFailed)
 		if err != nil {
 			return err
 		}
